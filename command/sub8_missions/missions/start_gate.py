@@ -3,9 +3,11 @@ from __future__ import division
 
 # from txros import action, util, tf, serviceclient
 import txros
-
+import rospkg
+import time
 from tf import transformations
 
+from uf_common.msg import MoveToAction, PoseTwistStamped, Float64Stamped
 from sub8 import pose_editor
 import sub8_tools
 from sub8_msgs.srv import VisionRequest, VisionRequestRequest, VisionRequest2DRequest, VisionRequest2D, BMatrix, BMatrixRequest
@@ -50,7 +52,7 @@ class StartGateMission(object):
 
         if not start_gate_search_res.found:
             fprint("Waiting a few seconds and trying again:")
-            txros.sleep(3)
+            time.sleep(3)
             start_gate_search_res = yield start_gate_search(VisionRequest2DRequest(target_name=''))
         # This is to reset the buffer
         yield start_gate_enable(SetBoolRequest(data=False))
@@ -59,7 +61,7 @@ class StartGateMission(object):
             fprint("Running search pattern")
             while not self.FOUND_START_GATE and start_gate_search_res.pose.x == 0:
                 fprint(self.FOUND_START_GATE)
-                txros.sleep(1)
+                time.sleep(1)
                 fprint("AGAIN - Searching for start gate pose")
                 self.start_gate_find()
                 yield self.search_pattern()
